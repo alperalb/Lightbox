@@ -30,6 +30,12 @@ public class LightboxConfig {
       }
     })
   }
+  
+  /// How to load image onto UIImageView
+  public static var loadVideo: (UIView, URL, ((URL?) -> Void)?) -> Void = { (videoView, videoURL, completion) in
+    // empty by default
+    completion?(nil)
+  }
 
   /// Indicator is used to show while image is being fetched
   public static var makeLoadingIndicator: () -> UIView = {
