@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 protocol PageViewDelegate: class {
 
@@ -10,6 +11,13 @@ protocol PageViewDelegate: class {
 
 class PageView: UIScrollView {
 
+  lazy var videoView: UIView = {
+    let playerLayer = UIView()
+    playerLayer.bounds = self.bounds
+    
+    return playerLayer
+  }()
+  
   lazy var imageView: UIImageView = {
     let imageView = UIImageView()
     imageView.contentMode = .scaleAspectFit
@@ -106,6 +114,7 @@ class PageView: UIScrollView {
 
   func updatePlayButton () {
     if self.image.videoURL != nil && !subviews.contains(playButton) {
+      layer.addSublayer(videoView)
       addSubview(playButton)
     } else if self.image.videoURL == nil && subviews.contains(playButton) {
       playButton.removeFromSuperview()
@@ -124,6 +133,23 @@ class PageView: UIScrollView {
       self.configureImageView()
       self.pageViewDelegate?.remoteImageDidLoad(image, imageView: self.imageView)
 
+      UIView.animate(withDuration: 0.4) {
+        self.loadingIndicator.alpha = 0
+      }
+    }
+  }
+  
+  private func fetchVideo () {
+    loadingIndicator.alpha = 1
+    self.image.addVideoTo(videoView) { [weak self] image in
+      guard let self = self else {
+        return
+      }
+      
+      self.isUserInteractionEnabled = true
+      self.configureImageView()
+      self.pageViewDelegate?.remoteImageDidLoad(image, imageView: self.imageView)
+      
       UIView.animate(withDuration: 0.4) {
         self.loadingIndicator.alpha = 0
       }

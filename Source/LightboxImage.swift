@@ -48,4 +48,20 @@ open class LightboxImage {
       completion?(nil)
     }
   }
+  
+  open func addVideoTo(_ imageView: UIView, completion: ((UIImage?) -> Void)? = nil) {
+    if let image = image {
+      imageView.image = image
+      completion?(image)
+    } else if let imageURL = imageURL {
+      LightboxConfig.loadImage(imageView, imageURL, completion)
+    } else if let imageClosure = imageClosure {
+      let img = imageClosure()
+      imageView.image = img
+      completion?(img)
+    } else {
+      imageView.image = nil
+      completion?(nil)
+    }
+  }
 }
